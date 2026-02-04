@@ -1,0 +1,8 @@
+# Binaries
+server
+client
+*.o
+
+# OS generated files
+.DS_Store
+*.swp
