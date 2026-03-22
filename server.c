@@ -648,9 +648,41 @@ void return_book(int client_socket, const char *username) {
 }
 
 void user_menu(int client_socket, const char *username) {
-    send_message(client_socket, "\nUser Menu:\n4. Logout\nChoice: ");
+    char choice;
+    char buffer[BUFFER_SIZE];
+
+    while (1) {
+        send_message(client_socket, "\nUser Menu:\n1. Search Book\n2. Borrow Book\n3. Return Book\n4. Logout\nChoice: ");
+        memset(buffer, 0, BUFFER_SIZE); // Clear the buffer before reading
+        if (read(client_socket, buffer, BUFFER_SIZE - 1) <= 0) {
+            perror("Read error");
+            close(client_socket);
+            return;
+        }
+        choice = buffer[0];
+
+        switch (choice) {
+            case '1':
+                search_book(client_socket);
+                break;
+            case '2':
+                borrow_book(client_socket, username);
+                break;
+            case '3':
+                return_book(client_socket, username);
+                break;
+            case '4':
+                send_message(client_socket, "Logging out...\n\nLogout\n");
+                return;
+            default:
+                send_message(client_socket, "Invalid choice. Try again.\n\n");
+        }
+    }
 }
 
+
+
+
 void send_message(int client_socket, const char *message) {
-    send(client_socket, message, strlen(message), 0);
+    write(client_socket, message, strlen(message));
 }
